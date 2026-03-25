@@ -12,3 +12,6 @@ Atliq Hardwares (imaginary company) is one of the leading computer hardware pro
 - MySQL 
 - PowerBI
 - MS Power Point
+
+## Dataset
+[Downlod](https://codebasics.io/challenges/codebasics-resume-project-challenge/7)
