@@ -7,3 +7,8 @@ Atliq Hardwares (imaginary company) is one of the leading computer hardware pro
 - There are 10 ad hoc requests for which the business needs insights.
 - Need to run a SQL query to answer these requests. 
 - The target audience of this dashboard is top-level management - hence to create a presentation to show the insights.
+
+## Tools used
+- MySQL 
+- PowerBI
+- MS Power Point
