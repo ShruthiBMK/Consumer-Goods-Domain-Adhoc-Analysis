@@ -16,6 +16,7 @@ FROM gdb023.fact_sales_monthly
 WHERE fiscal_year = 2020
 GROUP BY quarter
 ORDER BY sold_quantity DESC;
+-- ----------------------------------------------------------------------------------
 -- Q2 Provide a report with the Gross Sales Amount for the customer “Atliq Exclusive” for each month.
 WITH cte AS (SELECT dc.customer,year(fs.date) as year, 
 MONTHNAME(fs.date) as months, MONTH(fs.date) as month_no,
@@ -27,7 +28,7 @@ WHERE dc.customer= "Atliq Exclusive")
 SELECT months,year, CONCAT(ROUND(SUM(gross_sales)/1000000 ,2), 'M') AS gross_sales FROM cte
 GROUP BY year,months
 ORDER BY year,month_no;
-
+-- --------------------------------------------------------------------
 -- 3. Which channel contributed the most to gross sales in FY 2021 and calculate its percentage contribution? 
 WITH cte1 AS (SELECT dc.channel,fs.fiscal_year, 
 sum(fs.sold_quantity* fg.gross_price) as gross_sales 
@@ -39,7 +40,7 @@ GROUP BY dc.channel
 ORDER BY gross_sales DESC )
 SELECT channel, ROUND(gross_sales/1000000 ,2) AS gross_sales_in_mln,
 round(gross_sales/(sum(gross_sales) OVER())*100,2) AS percnt_contri FROM cte1;
-
+-- ------------------------------------------------------------------------------------------------
 -- 4. Identify the top 3 products in each division based on total sold quantities for the fiscal year 2021.
 
 with cte2 as (SELECT fs.product_code,concat(dp.product,"(",dp.variant,")") AS product,dp.division,fs.fiscal_year, 
@@ -54,7 +55,7 @@ WHERE fs.fiscal_year =2021
 GROUP BY dp.division, fs.product_code)
 SELECT product, division, tot_sold_qty FROM cte2
 where product_rank<=3;
-
+-- --------------------------------------------------------------------------------------------------------------------------
 -- 5.Which segment had the most significant increase in unique products from 2020 to 2021?
 WITH prod_table AS (SELECT  dp.segment, fs.fiscal_year, count(distinct fs.product_code)  as prod_count
                    FROM fact_sales_monthly fs join dim_product dp ON fs.product_code= dp.product_code 
@@ -66,18 +67,18 @@ WITH prod_table AS (SELECT  dp.segment, fs.fiscal_year, count(distinct fs.produc
     JOIN prod_table prod_2021 ON prod_2020.segment=prod_2021.segment
     AND prod_2020.fiscal_year=2020  AND prod_2021.fiscal_year=2021
     ORDER BY difference DESC;
-    
+  -- ------------------------------------------------------------------------------------------------------------------  
     -- 6. Analyze the unique product counts for each segment and sort them in descending order of product counts.
     
 SELECT  segment,  count(distinct product_code)  as prod_count
                    FROM  dim_product 
                    GROUP BY segment
                    ORDER BY prod_count desc;
-                   
+  -- -----------------------------------------------------------------------------------------------------------------------------------------                 
 -- 7. Identify the markets in which the customer "Atliq Exclusive" operates its business in the APAC region. Present the findings in an insightful way.
 SELECT DISTINCT market FROM dim_customer 
 WHERE region ="APAC" AND customer ="Atliq Exclusive";
-
+-- -------------------------------------------------------------------------------------------------------------------------------------------------
 -- 8.Compare the unique product counts between 2020 and 2021. Calculate the percentage change and present the analysis.
 WITH unique_products as (SELECT fiscal_year,count(distinct product_code) as unique_products
          from fact_sales_monthly 
@@ -92,7 +93,7 @@ CROSS JOIN
     unique_products up_2021
 WHERE 
     up_2020.fiscal_year = 2020  AND  up_2021.fiscal_year = 2021;
-    
+-- ------------------------------------------------------------------------------------------------------------------------------------------------    
 -- 9.Identify the products with the highest and lowest manufacturing costs. Include their respective details and highlight the findings.
 
 SELECT m.product_code, concat(product," (",variant,")") AS product, manufacturing_cost
@@ -104,7 +105,7 @@ OR
 manufacturing_cost = 
 (SELECT max(manufacturing_cost) FROM fact_manufacturing_cost) 
 ORDER BY manufacturing_cost DESC;
-
+-- -------------------------------------------------------------------------------------------------------------------------
 -- 10.Analyze the top 5 customers who received the highest average pre-invoice discount percentage for the fiscal year 2021 
  --  and in the Indian market.
 SELECT c.customer_code, c.customer, round(AVG(pre_invoice_discount_pct),4) AS average_discount_percentage
@@ -114,6 +115,6 @@ WHERE c.market = "India" AND fiscal_year = "2021"
 GROUP BY customer_code
 ORDER BY average_discount_percentage DESC
 LIMIT 5;
-
+----------------------------------------------------------------------------------------------------------------------------------
 
 
